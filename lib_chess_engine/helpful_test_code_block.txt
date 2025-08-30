@@ -1,0 +1,18 @@
+        if (countBitBoard(chessBoard.pieceBitboards[black][pawn]) > 8 && move.flags() == EN_PASSANT)
+        {
+            cout << "Side to move: " << chessBoard.currentState.sideToMove << endl;
+            cout << "Move made by: " << pieceTypeToString[chessBoard.pieceAt[move.from()]] << endl;
+            cout << "Move from: " << squareIndexToString[move.from()] << endl;
+            cout << "Move to: " << squareIndexToString[move.to()] << endl;
+            cout << "Piece captured: " << pieceTypeToString[chessBoard.pieceAt[move.to()]] << endl;
+            cout << "Move type: " << move.flags() << endl;
+            cout << "EnPassant square: " << squareIndexToString[chessBoard.currentState.enPassantSquare] << endl;
+            cout << "At depth: " << depth << endl;
+
+            printBitBoard(chessBoard.pieceColorBitboards[black]);
+            printBitBoard(chessBoard.pieceBitboards[black][pawn]);
+            printBitBoard(chessBoard.pieceColorBitboards[white]);
+            printBitBoard(chessBoard.pieceBitboards[white][pawn]);
+
+            exit(0);
+        }
