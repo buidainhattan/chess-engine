@@ -97,7 +97,6 @@ void ChessBoard::makeMove(Move move)
         clearBit(pieceBitboards[enemyColor][currentState.captured], to);
         clearBit(pieceColorBitboards[enemyColor], to);
         clearBit(allPieces, from);
-        currentState.materials -= pieceValue[currentState.captured];
     }
 
     if (flag == EN_PASSANT)
@@ -107,7 +106,6 @@ void ChessBoard::makeMove(Move move)
         clearBit(allPieces, enPassantSquare);
         moveBit(allPieces, from, to);
         pieceAt[enPassantSquare] = pieceType_NB;
-        currentState.materials -= pieceValue[pawn];
     }
 
     if (move.isPromotion())
@@ -119,8 +117,6 @@ void ChessBoard::makeMove(Move move)
 
         setBit(pieceBitboards[side][piece], to);
         setBit(pieceColorBitboards[side], to);
-
-        currentState.materials += pieceValue[piece] - 100;
     }
 
     switch (flag)
@@ -154,6 +150,7 @@ void ChessBoard::makeMove(Move move)
     if (enPassantSquare != -1 && flag != DOUBLE_PAWN_PUSH)
         currentState.enPassantSquare = -1;
     updateCastlingRights(side, enemyColor, from, to);
+    currentState.materials = countMaterials();
     switchActiveSide();
 }
 

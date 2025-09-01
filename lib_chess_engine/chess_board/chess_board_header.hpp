@@ -5,7 +5,7 @@
 #include <cctype>
 #include <stack>
 
-#include "bitboard_helper_header.hpp"
+#include "../helpers/bitboard_helper_header.hpp"
 
 class ChessBoard
 {

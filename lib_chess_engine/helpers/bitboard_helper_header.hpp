@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "all_enums_header.hpp"
-#include "general_configs_header.hpp"
+#include "../generals/all_enums_header.hpp"
+#include "../generals/general_configs_header.hpp"
 
 // Rook ray mask (emtpy board) and attack mask
 std::vector<U64> allRookAttackMasks(int square, std::vector<U64> allBlockerBitBoards);

@@ -53,6 +53,7 @@ struct BoardState
     int halfmoveClock = 0;    // 50-move rule counter
     Color sideToMove = white; // 0 = WHITE, 1 = BLACK
     int materials = 0;
+    bool isInCheck = false;
 
     BoardState() = default;
 

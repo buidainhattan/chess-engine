@@ -16,10 +16,12 @@ enable_testing()
 # The following arguments are the source files that should be compiled
 add_executable(ChessEngine
     main.cpp
-    lib_chess_engine/all_enums.cpp
-    lib_chess_engine/chess_board.cpp
-    lib_chess_engine/bitboard_helper.cpp
-    lib_chess_engine/magic_bitboard_generator.cpp
+    lib_chess_engine/generals/all_enums.cpp
+    lib_chess_engine/helpers/bitboard_helper.cpp
+    lib_chess_engine/helpers/magic_bitboard_generator.cpp
+    lib_chess_engine/helpers/engine_debug_helper.cpp
+    lib_chess_engine/chess_board/chess_board.cpp
+    lib_chess_engine/move_generator/move_generator.cpp
+    lib_chess_engine/search/search.cpp
     lib_chess_engine/engine.cpp
-    lib_chess_engine/engine_debug_helper.cpp
 )
