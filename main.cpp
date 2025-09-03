@@ -11,9 +11,8 @@ int main()
 
     engine.chessBoard.newGameSetup();
     auto start = chrono::high_resolution_clock::now();
-    // Move bestMove = engine.search.bestMove(4);
-    // cout << "Move: " << squareIndexToString[bestMove.from()] << squareIndexToString[bestMove.to()] << endl;
-    perftDivide(6, engine);
+    Move bestMove = engine.search.bestMove(4);
+    cout << "Move: " << squareIndexToString[bestMove.from()] << squareIndexToString[bestMove.to()] << endl;
     auto end = chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> duration = end - start;
     cout << "Time taken: " << duration.count() / 1000 << " second(s)" << endl;

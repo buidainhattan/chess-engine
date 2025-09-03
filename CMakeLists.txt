@@ -23,5 +23,6 @@ add_executable(ChessEngine
     lib_chess_engine/chess_board/chess_board.cpp
     lib_chess_engine/move_generator/move_generator.cpp
     lib_chess_engine/search/search.cpp
+    lib_chess_engine/evaluation/evaluation.cpp
     lib_chess_engine/engine.cpp
 )

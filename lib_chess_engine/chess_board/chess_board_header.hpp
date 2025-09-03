@@ -49,9 +49,6 @@ public:
             return pieceBitboards[white][queen] | pieceBitboards[black][queen];
     };
 
-    // Count material value of each side
-    int countMaterials();
-
 private:
     std::string startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 

@@ -1,9 +1,8 @@
 #ifndef SEARCH_H
 #define SEARCH_H
 
-#include "../helpers/bitboard_helper_header.hpp"
-#include "../chess_board/chess_board_header.hpp"
 #include "../move_generator/move_generator_header.hpp"
+#include "../evaluation/evaluation_header.hpp"
 
 class Search
 {
@@ -19,6 +18,8 @@ public:
 private:
     ChessBoard &chessBoard;
     MoveGenerator &moveGenerator;
+
+    Evaluation evaluation = Evaluation(chessBoard);
 };
 
 #endif

@@ -1,7 +1,6 @@
 #ifndef MOVE_GENERATOR_H
 #define MOVE_GENERATOR_H
 
-#include "../helpers/bitboard_helper_header.hpp"
 #include "../chess_board/chess_board_header.hpp"
 
 class MoveGenerator

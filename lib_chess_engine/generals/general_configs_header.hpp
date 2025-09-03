@@ -30,4 +30,7 @@ static constexpr U64 kingPathKingSide = 6917529027641081952ULL;
 static constexpr int MAX_ROOK_SIZE = 4096;
 static constexpr int MAX_BISHOP_SIZE = 512;
 
+static constexpr int NEGATIVE_INFINITY = -100000;
+static constexpr int POSITIVE_INFINITY = 100000;
+
 #endif

@@ -57,8 +57,6 @@ void ChessBoard::initialOccupancy()
     }
     allPieces = (pieceColorBitboards[white] | pieceColorBitboards[black]);
     empty = ~allPieces;
-
-    currentState.materials = countMaterials();
 }
 
 void ChessBoard::switchActiveSide()
@@ -150,7 +148,6 @@ void ChessBoard::makeMove(Move move)
     if (enPassantSquare != -1 && flag != DOUBLE_PAWN_PUSH)
         currentState.enPassantSquare = -1;
     updateCastlingRights(side, enemyColor, from, to);
-    currentState.materials = countMaterials();
     switchActiveSide();
 }
 
@@ -234,23 +231,6 @@ void ChessBoard::unMakeMove(Move move)
     empty = ~allPieces;
 
     pieceAt[to] = piece;
-}
-
-int ChessBoard::countMaterials()
-{
-    int whiteValue, blackValue;
-    whiteValue = blackValue = 0;
-
-    for (int pieceType = pawn; pieceType < pieceType_NB; pieceType++)
-    {
-        U64 whitePieceBitBoard = pieceBitboards[white][pieceType];
-        U64 blackPieceBitBoard = pieceBitboards[black][pieceType];
-
-        whiteValue += pieceValue[pieceType] * countBitBoard(whitePieceBitBoard);
-        blackValue += pieceValue[pieceType] * countBitBoard(blackPieceBitBoard);
-    }
-
-    return whiteValue - blackValue;
 }
 
 void ChessBoard::FENPiecesPlacement(string piecesPosition)
