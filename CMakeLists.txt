@@ -2,27 +2,53 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Define the project name
-project(ChessEngine CXX) # 'CXX' specifies that this is a C++ project
+project(ChessEngine CXX)
 
-# Define stand c++ version
+# Define C++ standard version
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED OUTPUT_NAME)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(CTest)
-enable_testing()
+# --- SET GLOBAL OUTPUT DIRECTORIES ---
+# This is the new, more robust method.
+# It tells CMake to configure the Visual Studio project to place all
+# DLLs and EXEs into a "bin" directory.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Add an executable target
-# The first argument is the name of the executable (e.g., myprogram)
-# The following arguments are the source files that should be compiled
-add_executable(ChessEngine
-    main.cpp
+# --- Build option to switch between EXE and DLL ---
+option(BUILD_SHARED_LIB "Build a shared library (.dll) for FFI" OFF)
+
+# --- Define your list of source files ---
+set(ENGINE_LITE_SOURCES
     lib_chess_engine/generals/all_enums.cpp
     lib_chess_engine/helpers/bitboard_helper.cpp
-    lib_chess_engine/helpers/magic_bitboard_generator.cpp
-    lib_chess_engine/helpers/engine_debug_helper.cpp
     lib_chess_engine/chess_board/chess_board.cpp
     lib_chess_engine/move_generator/move_generator.cpp
-    lib_chess_engine/search/search.cpp
-    lib_chess_engine/evaluation/evaluation.cpp
     lib_chess_engine/engine.cpp
 )
+
+set(ENGINE_SOURCES
+    lib_chess_engine/search/search.cpp
+    lib_chess_engine/evaluation/evaluation.cpp
+)
+
+set (HELPER_SOURCES
+    lib_chess_engine/helpers/magic_bitboard_generator.cpp
+    lib_chess_engine/helpers/engine_debug_helper.cpp
+)
+
+# --- Conditional Build Logic ---
+if(BUILD_SHARED_LIB)
+    # Build the SHARED LIBRARY (.dll)
+    add_library(my_engine SHARED 
+        ffi_wrapper.cpp
+        ${ENGINE_LITE_SOURCES}
+    )
+else()
+    # Build the EXECUTABLE
+    add_executable(ChessEngine 
+        main.cpp
+        ${ENGINE_LITE_SOURCES}
+        ${ENGINE_SOURCES}
+        ${HELPER_SOURCES}
+    )
+endif()

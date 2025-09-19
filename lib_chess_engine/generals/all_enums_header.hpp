@@ -20,6 +20,7 @@ const enum SquareEnum {
 extern const std::map<std::string, SquareEnum> stringToSquareEnum;
 extern const std::string squareIndexToString[64];
 extern const std::string pieceTypeToString[7];
+extern const std::string colorToString[3];
 
 const enum PieceType {
     pawn, knight, bishop, rook, queen, king,

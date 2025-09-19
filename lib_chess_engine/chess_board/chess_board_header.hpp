@@ -10,9 +10,11 @@
 class ChessBoard
 {
 public:
+    ChessBoard();
+
     U64 pieceBitboards[color_NB][pieceType_NB] = {0ULL};
     U64 pieceColorBitboards[color_NB] = {0ULL};
-    PieceType pieceAt[square_NB] = {pieceType_NB};
+    PieceType pieceAt[square_NB];
 
     U64 allPieces, empty;
 
@@ -22,7 +24,6 @@ public:
     int halfMoveClock;
     int fullMoveNumber;
 
-    void newGameSetup();
     void loadFromFEN(std::string FEN);
     void FENStringParser(std::string FEN);
     void initialOccupancy();
@@ -49,9 +50,9 @@ public:
             return pieceBitboards[white][queen] | pieceBitboards[black][queen];
     };
 
-private:
-    std::string startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    void resetChessBoard();
 
+private:
     void FENPiecesPlacement(std::string piecesPosition);
     void FENActiveColor(char aspect);
     void FENCastlingStates(std::string castlingPermision);

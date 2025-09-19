@@ -31,3 +31,8 @@ const string pieceTypeToString[7] =
     "pawn", "knight", "bishop", "rook", "queen", "king",
     "No piece",
 };
+
+const string colorToString[3] = {
+    "white", "black",
+    "No color",
+};

@@ -2,9 +2,9 @@
 
 using namespace std;
 
-void ChessBoard::newGameSetup()
+ChessBoard::ChessBoard()
 {
-    FENStringParser(startFEN);
+    fill(pieceAt, pieceAt + square_NB, pieceType_NB);
 }
 
 void ChessBoard::loadFromFEN(string FEN)
@@ -231,6 +231,16 @@ void ChessBoard::unMakeMove(Move move)
     empty = ~allPieces;
 
     pieceAt[to] = piece;
+}
+
+void ChessBoard::resetChessBoard()
+{
+    memset(pieceBitboards, 0ULL, sizeof(pieceBitboards));
+    memset(pieceColorBitboards, 0ULL, sizeof(pieceColorBitboards));
+    fill(pieceAt, pieceAt + square_NB, pieceType_NB);
+
+    stateHistory = {};
+    currentState = BoardState();
 }
 
 void ChessBoard::FENPiecesPlacement(string piecesPosition)
