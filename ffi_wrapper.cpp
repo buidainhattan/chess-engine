@@ -23,16 +23,24 @@ using namespace std;
 // This single, persistent engine instance will hold the board state between calls.
 static EngineLite engineLite;
 
-// --- NEW STRUCT FOR RETURNING A LIST OF MOVES ---
+// C-compatible move struct with move index
+struct MoveData
+{
+    int from_square; // 0-63 square index
+    int to_square;   // 0-63 square index
+    int move_type;   // 0=quiet, 1=capture, 2=enpassant, 3=castling
+    int move_index;  // Index into internal moveList
+};
+
 struct MoveListResult
 {
-    const char **moves; // Pointer to an array of C-style strings
+    const MoveData *moves; // Pointer to array of MoveData
     int count;
 };
 
-// --- STATIC STORAGE TO KEEP MOVE STRINGS ALIVE ---
-static std::vector<std::string> move_storage;
-static std::vector<const char *> move_pointers;
+// Static storage for moves
+static std::vector<MoveData> move_storage;
+static std::vector<Move> internal_move_list;
 
 // --- HELPER FUNCTIONS ---
 void setBoardFromFen(EngineLite &engineLite, const string &FEN = startFEN)
@@ -45,31 +53,6 @@ string getSideToMove(EngineLite &engineLite)
     Color sideToMove = engineLite.chessBoard.currentState.sideToMove;
     string sideToMoveString = colorToString[sideToMove];
     return sideToMoveString;
-}
-
-vector<string> getLegalMoves(EngineLite &engineLite)
-{
-    vector<string> moveStrings = {};
-    vector<Move> moves = engineLite.moveGenerator.generateLegalMoves();
-    for (Move move : moves)
-    {
-        string moveString = squareIndexToString[move.from()] + squareIndexToString[move.to()];
-        // You'll need to add promotion char logic here if applicable
-        moveStrings.push_back(moveString);
-    }
-    return moveStrings;
-}
-
-void makeMove(EngineLite &engineLite, const string &moveUCI)
-{
-    Move moveToMake = engineLite.convertStringToMove(moveUCI);
-    engineLite.chessBoard.makeMove(moveToMake);
-}
-
-void unmakeMove(EngineLite &engineLite, const string &moveUCI)
-{
-    Move moveToUnMake = engineLite.convertStringToMove(moveUCI);
-    engineLite.chessBoard.unMakeMove(moveToUnMake);
 }
 
 // --- THE EXTERN "C" WRAPPER ---
@@ -91,35 +74,39 @@ extern "C"
     }
 
     // Specialized function to get the list of legal moves
-    DLLEXPORT MoveListResult get_legal_moves_ffi()
+    DLLEXPORT MoveListResult get_legal_moves()
     {
-        // 1. Generate moves using your existing C++ logic
-        move_storage = getLegalMoves(engineLite);
+        move_storage.clear();
+        internal_move_list = engineLite.moveGenerator.generateLegalMoves();
 
-        // 2. Create C-style string pointers that are safe to return
-        move_pointers.clear();
-        for (const auto &move_str : move_storage)
+        for (int i = 0; i < internal_move_list.size(); i++)
         {
-            move_pointers.push_back(move_str.c_str());
+            const Move &move = internal_move_list[i];
+            MoveData data;
+            data.from_square = move.from();
+            data.to_square = move.to();
+            data.move_type = move.flags();
+            data.move_index = i;
+
+            move_storage.push_back(data);
         }
 
-        // 3. Populate and return the struct
         MoveListResult result;
-        result.count = move_pointers.size();
-        result.moves = move_pointers.data();
-
+        result.moves = move_storage.data();
+        result.count = move_storage.size();
         return result;
     }
 
-    DLLEXPORT void make_move(const char *c_moveString)
-    {
-        string moveString = c_moveString;
-        makeMove(engineLite, moveString);
+    DLLEXPORT void make_move(int move_index) {
+        if (move_index >= 0 && move_index < internal_move_list.size()) {
+            engineLite.chessBoard.makeMove(internal_move_list[move_index]);
+        }
     };
 
-    DLLEXPORT void unmake_move(const char *c_moveString)
+    DLLEXPORT void un_make_move(int move_index)
     {
-        string moveString = c_moveString;
-        unmakeMove(engineLite, moveString);
+        if (move_index >= 0 && move_index < internal_move_list.size()) {
+            engineLite.chessBoard.unMakeMove(internal_move_list[move_index]);
+        }
     };
 }
