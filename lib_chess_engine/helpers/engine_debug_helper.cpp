@@ -10,7 +10,7 @@ long long perftBulkCount(int depth, Engine &engine)
     }
 
     long long nodes = 0;
-    vector<Move> legalMoves = engine.moveGenerator.generateLegalMoves();
+    vector<Move> legalMoves = engine.getLegalMoves();
     if (depth == 1)
     {
         return legalMoves.size();
@@ -18,11 +18,11 @@ long long perftBulkCount(int depth, Engine &engine)
 
     for (Move &move : legalMoves)
     {
-        engine.chessBoard.makeMove(move);
+        engine.makeMove(move);
 
         nodes += perftBulkCount(depth - 1, engine);
 
-        engine.chessBoard.unMakeMove(move);
+        engine.unMakeMove(move);
     }
 
     return nodes;
@@ -42,7 +42,7 @@ void perftBulkCountDivide(int depth, Engine &engine)
     long long totalNodesAtDepth = 0;
 
     // Generate all legal moves from the current position (the root of the divide)
-    std::vector<Move> rootMoves = engine.moveGenerator.generateLegalMoves();
+    std::vector<Move> rootMoves = engine.getLegalMoves();
 
     // Iterate through each of these root moves
     for (const auto &move : rootMoves)
@@ -51,13 +51,13 @@ void perftBulkCountDivide(int depth, Engine &engine)
         long long branchNodes = 0;
 
         // Make the root move to enter its subtree
-        engine.chessBoard.makeMove(move);
+        engine.makeMove(move);
 
         // Recursively call the *regular* perft function for the subtree.
         // We pass depth - 1 because we've already made one move from the root.
         branchNodes += perftBulkCount(depth - 1, engine);
 
-        engine.chessBoard.unMakeMove(move); // Unmake the root move to restore board state for the next branch
+        engine.unMakeMove(move); // Unmake the root move to restore board state for the next branch
 
         // Print results for this specific branch (this is the "divide" output)
         cout << squareIndexToString[move.from()] << squareIndexToString[move.to()] << ": " << branchNodes << endl;
@@ -80,10 +80,10 @@ long long perft(int depth, long long &capturesCount, long long &enpassantCount, 
     }
 
     long long nodes = 0;
-    vector<Move> legalMoves = engine.moveGenerator.generateLegalMoves();
+    vector<Move> legalMoves = engine.getLegalMoves();
     for (Move &move : legalMoves)
     {
-        engine.chessBoard.makeMove(move);
+        engine.makeMove(move);
 
         MoveFlags flag = move.flags();
         if (flag == CAPTURE || flag == EN_PASSANT)
@@ -106,7 +106,7 @@ long long perft(int depth, long long &capturesCount, long long &enpassantCount, 
                        move.to(),
                        engine);
 
-        engine.chessBoard.unMakeMove(move);
+        engine.unMakeMove(move);
     }
 
     return nodes;
@@ -132,7 +132,7 @@ void perftDivide(int depth, Engine &engine)
     long long totalCheckmates = 0;
 
     // Generate all legal moves from the current position (the root of the divide)
-    std::vector<Move> rootMoves = engine.moveGenerator.generateLegalMoves();
+    std::vector<Move> rootMoves = engine.getLegalMoves();
 
     // Iterate through each of these root moves
     for (const auto &move : rootMoves)
@@ -147,7 +147,7 @@ void perftDivide(int depth, Engine &engine)
         long long branchCheckmates = 0;
 
         // Make the root move to enter its subtree
-        engine.chessBoard.makeMove(move);
+        engine.makeMove(move);
 
         MoveFlags flag = move.flags();
         if (flag == CAPTURE || flag == EN_PASSANT)
@@ -172,7 +172,7 @@ void perftDivide(int depth, Engine &engine)
                             move.to(),
                             engine);
 
-        engine.chessBoard.unMakeMove(move); // Unmake the root move to restore board state for the next branch
+        engine.unMakeMove(move); // Unmake the root move to restore board state for the next branch
 
         // Print results for this specific branch (this is the "divide" output)
         cout << squareIndexToString[move.from()] << squareIndexToString[move.to()] << ": "

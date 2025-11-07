@@ -26,8 +26,8 @@ Engine handleUCIReady()
 // Placeholder for your chess board representation and logic
 void setBoardFromFen(Engine &engine, const string FEN = startFEN)
 {
-    engine.chessBoard.resetChessBoard();
-    engine.chessBoard.loadFromFEN(FEN);
+    engine.reset();
+    engine.loadFromFEN(FEN);
 
     cout << "info string setting board to FEN " << FEN << endl;
 }
@@ -35,13 +35,13 @@ void setBoardFromFen(Engine &engine, const string FEN = startFEN)
 void makeMove(Engine &engine, const string &moveUCI)
 {
     Move moveToMake = engine.convertStringToMove(moveUCI);
-    engine.chessBoard.makeMove(moveToMake);
+    engine.makeMove(moveToMake);
     cout << "info string making move " << moveUCI << endl;
 }
 
 string getBestMove(Engine &engine, int level)
 {
-    Move moveObject = engine.search.bestMove(level);
+    Move moveObject = engine.getBestMove(level);
     string moveString = squareIndexToString[moveObject.from()] + squareIndexToString[moveObject.to()];
     return moveString;
 }

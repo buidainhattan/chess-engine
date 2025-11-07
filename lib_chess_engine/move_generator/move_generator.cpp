@@ -331,7 +331,7 @@ void MoveGenerator::generateSlidingPiecesMoves(vector<Move> &legalMoves, Color s
         int fromSquare = bitScanForward(othogonals);
         U64 othogonal = getLSB(othogonals);
         popLSB(othogonals);
-        U64 attacks = getRookPseudoLegalAttackBitBoard(fromSquare, chessBoard.allPieces, sideToMove) & (pushMask | captureMask);
+        U64 attacks = getRookPseudoLegalAttackBitBoard(fromSquare, sideToMove) & (pushMask | captureMask);
         if (pinRay & othogonal)
         {
             if (othogonalPinRay & othogonal)
@@ -355,7 +355,7 @@ void MoveGenerator::generateSlidingPiecesMoves(vector<Move> &legalMoves, Color s
         int fromSquare = bitScanForward(diagonals);
         U64 diagonal = getLSB(diagonals);
         popLSB(diagonals);
-        U64 attacks = getBishopPseudoLegalAttackBitBoard(fromSquare, chessBoard.allPieces, sideToMove) & (pushMask | captureMask);
+        U64 attacks = getBishopPseudoLegalAttackBitBoard(fromSquare, sideToMove) & (pushMask | captureMask);
         if (pinRay & diagonal)
         {
             if (diagonalPinRay & diagonal)
@@ -393,16 +393,16 @@ U64 MoveGenerator::getKingPseudoLegalAttackBitBoard(int square, Color color)
 U64 MoveGenerator::getRookRawAttackBitBoard(int square, U64 allPieces)
 {
     U64 rookBlockerBitBoard, magicIndex;
-    rookBlockerBitBoard = rookRayMask(square) & allPieces;
+    rookBlockerBitBoard = rookRayMask(square) & chessBoard.allPieces;
     magicIndex = (rookBlockerBitBoard * rookMagicBitBoards[square]) >> rookShifts[square];
     U64 lookupIndex = (square * MAX_ROOK_SIZE) + magicIndex;
 
     return rookAttacksLookupTable[lookupIndex];
 }
 
-U64 MoveGenerator::getRookPseudoLegalAttackBitBoard(int square, U64 allPieces, Color color)
+U64 MoveGenerator::getRookPseudoLegalAttackBitBoard(int square, Color color)
 {
-    return getRookRawAttackBitBoard(square, allPieces) & ~chessBoard.pieceColorBitboards[color];
+    return getRookRawAttackBitBoard(square, chessBoard.allPieces) & ~chessBoard.pieceColorBitboards[color];
 }
 
 U64 MoveGenerator::getBishopRawAttackBitBoard(int square, U64 allPieces)
@@ -415,9 +415,9 @@ U64 MoveGenerator::getBishopRawAttackBitBoard(int square, U64 allPieces)
     return bishopAttacksLookupTable[lookupIndex];
 }
 
-U64 MoveGenerator::getBishopPseudoLegalAttackBitBoard(int square, U64 allPieces, Color color)
+U64 MoveGenerator::getBishopPseudoLegalAttackBitBoard(int square, Color color)
 {
-    return getBishopRawAttackBitBoard(square, allPieces) & ~chessBoard.pieceColorBitboards[color];
+    return getBishopRawAttackBitBoard(square, chessBoard.allPieces) & ~chessBoard.pieceColorBitboards[color];
 }
 
 U64 MoveGenerator::squareAttackingBy(int square)

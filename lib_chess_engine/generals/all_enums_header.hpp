@@ -17,11 +17,6 @@ const enum SquareEnum {
     square_NB,
 };
 
-extern const std::map<std::string, SquareEnum> stringToSquareEnum;
-extern const std::string squareIndexToString[64];
-extern const std::string pieceTypeToString[7];
-extern const std::string colorToString[3];
-
 const enum PieceType {
     pawn, knight, bishop, rook, queen, king,
     pieceType_NB,
@@ -33,6 +28,12 @@ const enum Color {
     white, black,
     color_NB,
 };
+
+extern const std::map<std::string, SquareEnum> stringToSquareEnum;
+extern const std::map<std::string, Color> stringToColor;
+extern const std::string squareIndexToString[64];
+extern const std::string pieceTypeToString[7];
+extern const std::string colorToString[3];
 
 // Flag constants
 const enum MoveFlags {

@@ -44,10 +44,10 @@ public:
     U64 getKingPseudoLegalAttackBitBoard(int square, Color color);
     // Return rook pseudo legal attack bitboard
     U64 getRookRawAttackBitBoard(int square, U64 allPieces);
-    U64 getRookPseudoLegalAttackBitBoard(int square, U64 allPieces, Color color);
+    U64 getRookPseudoLegalAttackBitBoard(int square, Color color);
     // Return bishop pseudo legal attack bitboard
     U64 getBishopRawAttackBitBoard(int square, U64 allPieces);
-    U64 getBishopPseudoLegalAttackBitBoard(int square, U64 allPieces, Color color);
+    U64 getBishopPseudoLegalAttackBitBoard(int square, Color color);
 
     // Return pieces are attacking certain square
     U64 squareAttackingBy(int square);

@@ -1,78 +1,210 @@
+#include <cassert>
+
 #include "engine_header.hpp"
 
 using namespace std;
 
-Move EngineLite::convertStringToMove(const string &moveString)
+void Engine::reset()
 {
-    if (moveString.length() < 4)
+    chessBoard.resetChessBoard();
+}
+
+void Engine::loadFromFEN(string FEN)
+{
+    chessBoard.resetChessBoard();
+    chessBoard.loadFromFEN(FEN);
+}
+
+Move Engine::convertStringToMove(const std::string &moveString)
+{
+    if (moveString.length() < 4 || moveString.length() > 5)
     {
-        throw std::runtime_error("Invalid UCI move string: too short");
+        throw std::runtime_error("Invalid move string: length must be 4 or 5.");
     }
 
-    // 1. Parse 'from' and 'to' squares
-    string fromString = moveString.substr(0, 2);
-    int from = stringToSquareEnum.find(fromString)->second;
+    int from, to;
+    try
+    {
+        // Use .at() for safe map access, which throws an exception if the key doesn't exist.
+        from = stringToSquareEnum.at(moveString.substr(0, 2));
+        to = stringToSquareEnum.at(moveString.substr(2, 2));
+    }
+    catch (const std::out_of_range &)
+    {
+        throw std::runtime_error("Invalid move string: contains an invalid square.");
+    }
 
-    string toString = moveString.substr(2, 2);
-    int to = stringToSquareEnum.find(toString)->second;
-
-    PieceType moving_piece = chessBoard.pieceAt[from];
     MoveFlags flags = QUIET_MOVE;
+    PieceType moving_piece = chessBoard.pieceAt[from];
 
-    // 2. Handle Promotions
+    // 1. Handle Promotions
     if (moveString.length() == 5)
     {
-        bool is_capture = chessBoard.pieceAt[to] != pieceType_NB;
-        char promotion_char = moveString[4];
-        switch (promotion_char)
+        // Determine the base flag (promotion or promotion with capture)
+        int baseFlags = (chessBoard.pieceAt[to] != pieceType_NB) ? PROMOTION_CAPTURE : PROMOTION;
+
+        // Determine the bits for the specific promotion piece
+        int promotionPieceBits = 0;
+        switch (tolower(moveString[4]))
         {
         case 'q':
-
-            flags = is_capture ? PROMOTION_CAPTURE : PROMOTION;
+            promotionPieceBits = queen - knight;
             break;
         case 'r':
-            flags = is_capture ? PROMOTION_CAPTURE : PROMOTION;
+            promotionPieceBits = rook - knight;
             break;
         case 'b':
-            flags = is_capture ? PROMOTION_CAPTURE : PROMOTION;
+            promotionPieceBits = bishop - knight;
             break;
         case 'n':
-            flags = is_capture ? PROMOTION_CAPTURE : PROMOTION;
+            promotionPieceBits = knight - knight;
             break;
         default:
-            throw std::runtime_error("Invalid promotion piece");
+            throw std::runtime_error("Invalid promotion piece: " + std::string(1, moveString[4]));
         }
-        return Move(from, to, flags);
-    }
 
-    // 3. Handle Special Moves (using the board state)
-    if (moving_piece == pawn)
-    {
-        // En Passant
-        if (to == chessBoard.currentState.enPassantSquare)
-        {
-            flags = EN_PASSANT;
-        }
-        // Double Pawn Push
-        else if (abs(from - to) / 8 == 2)
-        {
-            flags = DOUBLE_PAWN_PUSH;
-        }
+        // Combine the base flag with the piece bits
+        flags = static_cast<MoveFlags>(baseFlags | promotionPieceBits);
     }
-    else if (moving_piece == king)
+    // 2. Handle other move types
+    else
     {
-        // Castling (king moves two squares)
-        if (abs(from - to) / 8 == 2)
+        if (moving_piece == pawn)
         {
-            flags = (to > from) ? KING_CASTLE : QUEEN_CASTLE;
+            // Double Pawn Push (a pawn moving two ranks forward)
+            if (abs(to - from) == 16)
+            {
+                flags = DOUBLE_PAWN_PUSH;
+            }
+            // En Passant (diagonal pawn move to an empty square)
+            else if (to == chessBoard.currentState.enPassantSquare && (abs(to - from) == 7 || abs(to - from) == 9))
+            {
+                flags = EN_PASSANT;
+            }
         }
-    }
+        else if (moving_piece == king)
+        {
+            // Castling (king moves two files)
+            if (abs(to - from) == 2)
+            {
+                // If 'to' square is greater, it's a move to the right (kingside)
+                flags = (to > from) ? KING_CASTLE : QUEEN_CASTLE;
+            }
+        }
 
-    // 4. Handle Captures (if not a special move already identified)
-    if (flags == QUIET_MOVE && chessBoard.pieceAt[to] != pieceType_NB)
-    {
-        flags = CAPTURE;
+        // A regular capture is only possible if no special flag has been set yet.
+        if (flags == QUIET_MOVE && chessBoard.pieceAt[to] != pieceType_NB)
+        {
+            flags = CAPTURE;
+        }
     }
 
     return Move(from, to, flags);
+}
+
+Color Engine::getCurrentSide()
+{
+    return chessBoard.currentState.sideToMove;
+}
+
+vector<Move> Engine::getLegalMoves()
+{
+    return moveGenerator.generateLegalMoves();
+}
+
+void Engine::makeMove(Move move)
+{
+    chessBoard.makeMove(move);
+}
+
+void Engine::unMakeMove(Move move)
+{
+    chessBoard.unMakeMove(move);
+}
+
+Move Engine::getBestMove(int depth)
+{
+    return search.bestMove(depth);
+}
+
+bool Engine::isInCheck(Color kingSide)
+{
+    U64 kingBitboard = chessBoard.pieceBitboards[kingSide][king];
+    int square = bitScanForward(kingBitboard);
+    if (moveGenerator.attacksToKing(square, kingSide)) {
+        return true;
+    }
+    return false;
+}
+
+string Engine::disambiguating(Color sideToMove, Move move)
+{
+    string notation;
+    notation.reserve(2);
+    const int from = move.from();
+    PieceType pieceToMove = chessBoard.pieceAt[from];
+    U64 piecesBitboard = chessBoard.pieceBitboards[sideToMove][pieceToMove];
+
+    if (countBitBoard(piecesBitboard) <= 1)
+    {
+        return notation;
+    }
+
+    U64 ambiguatedMove = 0ULL;
+    setBit(ambiguatedMove, move.to());
+    while (piecesBitboard)
+    {
+        int piecePosition = bitScanForward(piecesBitboard);
+        popLSB(piecesBitboard);
+        U64 pieceAttackBitboard;
+        switch (pieceToMove)
+        {
+        case knight:
+            pieceAttackBitboard = moveGenerator.getKnightPseudoLegalAttackBitBoard(piecePosition, sideToMove);
+            break;
+        case bishop:
+            pieceAttackBitboard = moveGenerator.getBishopPseudoLegalAttackBitBoard(piecePosition, sideToMove);
+            break;
+        case rook:
+            pieceAttackBitboard = moveGenerator.getRookPseudoLegalAttackBitBoard(piecePosition, sideToMove);
+            break;
+        case queen:
+            pieceAttackBitboard = moveGenerator.getBishopPseudoLegalAttackBitBoard(piecePosition, sideToMove) | moveGenerator.getRookPseudoLegalAttackBitBoard(piecePosition, sideToMove);
+            break;
+        default:
+            return notation;
+            break;
+        }
+        ambiguatedMove &= pieceAttackBitboard;
+    }
+
+    if (ambiguatedMove)
+    {
+        piecesBitboard = chessBoard.pieceBitboards[sideToMove][pieceToMove];
+        clearBit(piecesBitboard, from);
+        U64 rank = getRankBitboard(from);
+        U64 file = getFileBitboard(from);
+        string squareStr = squareIndexToString[from];
+
+        if (rank & piecesBitboard)
+        {
+            notation.push_back(squareStr[0]);
+        }
+        if (file & piecesBitboard)
+        {
+            notation.push_back(squareStr[1]);
+        }
+    }
+
+    return notation;
+}
+
+U64 Engine::getRankBitboard(const int square)
+{
+    return FIRST_RANK << ((square >> 3) << 3);
+}
+
+U64 Engine::getFileBitboard(const int square)
+{
+    return A_FILE << (square & 7);
 }

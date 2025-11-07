@@ -14,6 +14,12 @@ const map<string, SquareEnum> stringToSquareEnum =
     {"a8", a8}, {"b8", b8}, {"c8", c8}, {"d8", d8}, {"e8", e8}, {"f8", f8}, {"g8", g8}, {"h8", h8},
 };
 
+const map<string, Color> stringToColor = 
+{
+    {"white", white} , {"black", black},
+    {"color_NB", color_NB},
+};
+
 const string squareIndexToString[64] = 
 {
     "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", 

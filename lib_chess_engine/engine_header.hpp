@@ -4,18 +4,28 @@
 #include "move_generator/move_generator_header.hpp"
 #include "search/search_header.hpp"
 
-class EngineLite
+class Engine
 {
 public:
+    void reset();
+    void loadFromFEN(std::string FEN);
+    Move convertStringToMove(const std::string &moveString);
+    Color getCurrentSide();
+    std::vector<Move> getLegalMoves();
+    void makeMove(Move move);
+    void unMakeMove(Move move);
+    Move getBestMove(int depth);
+    bool isInCheck(Color kingSide);
+    std::string disambiguating(Color sideToMove, Move move);
+
+private:
+    U64 getRankBitboard(const int square);
+    U64 getFileBitboard(const int square);
+
+    bool botEnabled = false;
+    Color botSide = color_NB;
     ChessBoard chessBoard = ChessBoard();
     MoveGenerator moveGenerator = MoveGenerator(chessBoard);
-
-    Move convertStringToMove(const std::string &moveString);
-};
-
-class Engine : public EngineLite
-{
-public:
     Search search = Search(chessBoard, moveGenerator);
 };
 
