@@ -127,11 +127,18 @@ Move Engine::getBestMove(int depth)
     return search.bestMove(depth);
 }
 
-bool Engine::isInCheck(Color kingSide)
+int Engine::getKingSquare(Color kingSide)
 {
     U64 kingBitboard = chessBoard.pieceBitboards[kingSide][king];
     int square = bitScanForward(kingBitboard);
-    if (moveGenerator.attacksToKing(square, kingSide)) {
+    return square;
+}
+
+bool Engine::isInCheck(Color kingSide)
+{
+    int square = getKingSquare(kingSide);
+    if (moveGenerator.attacksToKing(square, kingSide))
+    {
         return true;
     }
     return false;

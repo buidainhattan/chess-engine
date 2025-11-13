@@ -144,6 +144,10 @@ extern "C"
         return data;
     };
 
+    DLLEXPORT int get_king_square(Color kingSide) {
+        return engine.getKingSquare(kingSide);
+    }
+
     DLLEXPORT int is_king_in_check(Color kingSide)
     {
         return (int)engine.isInCheck(kingSide);

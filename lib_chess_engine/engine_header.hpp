@@ -15,6 +15,7 @@ public:
     void makeMove(Move move);
     void unMakeMove(Move move);
     Move getBestMove(int depth);
+    int getKingSquare(Color kingSide);
     bool isInCheck(Color kingSide);
     std::string disambiguating(Color sideToMove, Move move);
 
