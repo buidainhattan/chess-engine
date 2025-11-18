@@ -53,13 +53,15 @@ struct BoardState
     int enPassantSquare = -1; // -1 if no en passant possible
     int castlingRights = 0;   // KQkq bits: 1111 = all castling available
     int halfmoveClock = 0;    // 50-move rule counter
+    int fullmoveCounter = 0;
     Color sideToMove = white; // 0 = WHITE, 1 = BLACK
     bool isInCheck = false;
+    U64 zobristKey = 0ULL;
 
     BoardState() = default;
 
-    BoardState(int ep, int castle, int half, Color side)
-        : enPassantSquare(ep), castlingRights(castle), halfmoveClock(half), sideToMove(side) {}
+    BoardState(int ep, int castle, int half, int full, Color side, U64 key)
+        : enPassantSquare(ep), castlingRights(castle), halfmoveClock(half), fullmoveCounter(full), sideToMove(side), zobristKey(key) {}
 
     // Castling rights helpers
     void addCastlingRights(Color color, bool isKingSide)

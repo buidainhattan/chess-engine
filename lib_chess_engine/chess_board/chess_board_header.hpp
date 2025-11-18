@@ -21,11 +21,9 @@ public:
     std::stack<BoardState> stateHistory = {};
     BoardState currentState;
 
-    int halfMoveClock;
-    int fullMoveNumber;
-
     void loadFromFEN(std::string FEN);
     void FENStringParser(std::string FEN);
+    std::string FENStringCrafter();
     void initialOccupancy();
 
     void switchActiveSide();
@@ -61,6 +59,8 @@ private:
     void FENFullMoveNumber(std::string moveNumber);
 
     void updateCastlingRights(Color sideToMove, Color enemyColor, int from, int to);
+    void updateFullmoveNumber(Color sideToMove);
+    void updateHalfmoveClock(MoveFlags flag, PieceType movingPiece);
 };
 
 #endif

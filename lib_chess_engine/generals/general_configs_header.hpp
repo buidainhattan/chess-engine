@@ -7,6 +7,9 @@ using U64 = unsigned long long;
 
 static const std::string startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
+static const int ZOBRIST_HASH_SIZE = 781;
+static const U64 ZOBRIST_SEED = 0x8787878787878800ULL;
+
 static constexpr U64 A_FILE = 0x0101010101010101ULL;
 static constexpr U64 H_FILE = 0x8080808080808080ULL;
 static constexpr U64 AB_FILE = 0x0303030303030303ULL;

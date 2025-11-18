@@ -48,6 +48,11 @@ void ChessBoard::FENStringParser(string FEN)
     }
 }
 
+string ChessBoard::FENStringCrafter()
+{
+    return string();
+}
+
 void ChessBoard::initialOccupancy()
 {
     for (int pieceType = 0; pieceType < pieceType_NB; pieceType++)
@@ -148,6 +153,8 @@ void ChessBoard::makeMove(Move move)
     if (enPassantSquare != -1 && flag != DOUBLE_PAWN_PUSH)
         currentState.enPassantSquare = -1;
     updateCastlingRights(side, enemyColor, from, to);
+    updateHalfmoveClock(flag, piece);
+    updateFullmoveNumber(side);
     switchActiveSide();
 }
 
@@ -375,12 +382,12 @@ void ChessBoard::FENEnPassantAny(string enPassantString)
 
 void ChessBoard::FENHalfMoveClock(string clock)
 {
-    halfMoveClock = stoi(clock);
+    currentState.halfmoveClock = stoi(clock);
 }
 
 void ChessBoard::FENFullMoveNumber(string moveNumber)
 {
-    fullMoveNumber = stoi(moveNumber);
+    currentState.fullmoveCounter = stoi(moveNumber);
 }
 
 void ChessBoard::updateCastlingRights(Color sideToMove, Color enemyColor, int from, int to)
@@ -406,4 +413,20 @@ void ChessBoard::updateCastlingRights(Color sideToMove, Color enemyColor, int fr
         currentState.removeCastlingRights(enemyColor, false);
     else if (to == enemyKingSideSquare)
         currentState.removeCastlingRights(enemyColor, true);
+}
+
+void ChessBoard::updateFullmoveNumber(Color sideToMove)
+{
+    if (sideToMove == black)
+        currentState.fullmoveCounter += 1;
+}
+
+void ChessBoard::updateHalfmoveClock(MoveFlags flag, PieceType movingPiece)
+{
+    if (movingPiece != pawn && flag != CAPTURE)
+    {
+        currentState.halfmoveClock += 1;
+        return;
+    }
+    currentState.halfmoveClock = 0;
 }

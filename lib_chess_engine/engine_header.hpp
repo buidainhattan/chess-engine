@@ -20,14 +20,14 @@ public:
     std::string disambiguating(Color sideToMove, Move move);
 
 private:
-    U64 getRankBitboard(const int square);
-    U64 getFileBitboard(const int square);
-
     bool botEnabled = false;
     Color botSide = color_NB;
     ChessBoard chessBoard = ChessBoard();
     MoveGenerator moveGenerator = MoveGenerator(chessBoard);
     Search search = Search(chessBoard, moveGenerator);
+
+    U64 getRankBitboard(const int square);
+    U64 getFileBitboard(const int square);
 };
 
 #endif
