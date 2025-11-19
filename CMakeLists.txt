@@ -26,6 +26,7 @@ set(ENGINE_SOURCES
     lib_chess_engine/engine.cpp
     lib_chess_engine/search/search.cpp
     lib_chess_engine/evaluation/evaluation.cpp
+    lib_chess_engine/transposition_table/zobrist_hash_generator.cpp
 )
 
 set(HELPER_SOURCES

@@ -46,6 +46,7 @@ void ChessBoard::FENStringParser(string FEN)
         }
         aspectIndex++;
     }
+    zobristHasher.setInitialZobristKey(pieceBitboards, currentState);
 }
 
 string ChessBoard::FENStringCrafter()
@@ -155,6 +156,7 @@ void ChessBoard::makeMove(Move move)
     updateCastlingRights(side, enemyColor, from, to);
     updateHalfmoveClock(flag, piece);
     updateFullmoveNumber(side);
+    zobristHasher.updateZobristKey(stateHistory.top(), currentState, piece, move);
     switchActiveSide();
 }
 

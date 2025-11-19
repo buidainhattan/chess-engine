@@ -10,6 +10,7 @@ public:
     void reset();
     void loadFromFEN(std::string FEN);
     Move convertStringToMove(const std::string &moveString);
+    BoardState getCurrentBoardState();
     Color getCurrentSide();
     std::vector<Move> getLegalMoves();
     void makeMove(Move move);

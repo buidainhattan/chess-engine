@@ -9,7 +9,8 @@ class ZobristHashGenerator
 {
 public:
     ZobristHashGenerator();
-    U64 getZobristKey(U64 (&pieceBitboardsByColor)[6], BoardState &state);
+    void setInitialZobristKey(U64 (&pieceBitboardsByColor)[2][6], BoardState &state);
+    void updateZobristKey(BoardState &previousState, BoardState &currentState, PieceType &movingPiece, Move &move);
 
 private:
     U64 zobristKeys[ZOBRIST_HASH_SIZE] = {0};

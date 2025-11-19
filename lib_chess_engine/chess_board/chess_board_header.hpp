@@ -6,6 +6,7 @@
 #include <stack>
 
 #include "../helpers/bitboard_helper_header.hpp"
+#include "../transposition_table/zobrist_hash_generator_header.h"
 
 class ChessBoard
 {
@@ -51,6 +52,8 @@ public:
     void resetChessBoard();
 
 private:
+    ZobristHashGenerator zobristHasher = ZobristHashGenerator();
+
     void FENPiecesPlacement(std::string piecesPosition);
     void FENActiveColor(char aspect);
     void FENCastlingStates(std::string castlingPermision);

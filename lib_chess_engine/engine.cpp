@@ -102,6 +102,11 @@ Move Engine::convertStringToMove(const std::string &moveString)
     return Move(from, to, flags);
 }
 
+BoardState Engine::getCurrentBoardState()
+{
+    return chessBoard.currentState;
+}
+
 Color Engine::getCurrentSide()
 {
     return chessBoard.currentState.sideToMove;

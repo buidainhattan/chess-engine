@@ -4,6 +4,8 @@
 #include <string>
 #include <map>
 
+#include "general_configs_header.hpp"
+
 // Little-Endian Rank-File mapping
 const enum SquareEnum {
     a1, b1, c1, d1, e1, f1, g1, h1,
@@ -56,7 +58,7 @@ struct BoardState
     int fullmoveCounter = 0;
     Color sideToMove = white; // 0 = WHITE, 1 = BLACK
     bool isInCheck = false;
-    U64 zobristKey = 0ULL;
+    U64 zobristKey = ULLONG_MAX;
 
     BoardState() = default;
 
