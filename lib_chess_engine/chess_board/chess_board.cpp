@@ -155,6 +155,7 @@ void ChessBoard::makeMove(Move move)
         currentState.enPassantSquare = -1;
     updateCastlingRights(side, enemyColor, from, to);
     updateHalfmoveClock(flag, piece);
+    updateRepetitionTracker(currentState.zobristKey, 1);
     updateFullmoveNumber(side);
     zobristHasher.updateZobristKey(stateHistory.top(), currentState, piece, move);
     switchActiveSide();
@@ -240,6 +241,7 @@ void ChessBoard::unMakeMove(Move move)
     empty = ~allPieces;
 
     pieceAt[to] = piece;
+    updateRepetitionTracker(currentState.zobristKey, -1);
 }
 
 void ChessBoard::resetChessBoard()
@@ -431,4 +433,22 @@ void ChessBoard::updateHalfmoveClock(MoveFlags flag, PieceType movingPiece)
         return;
     }
     currentState.halfmoveClock = 0;
+}
+
+void ChessBoard::updateRepetitionTracker(U64 zobristKey, int changeAmount)
+{
+    if (currentState.halfmoveClock == 0)
+    {
+        repetitionTracker.clear();
+        return;
+    }
+    repetitionTracker[zobristKey] += changeAmount;
+    if (repetitionTracker[zobristKey] < 0) {
+        repetitionTracker.erase(zobristKey);
+        isRepetition = false;
+        return;
+    }
+    if (repetitionTracker[zobristKey] >= 2) {
+        isRepetition = true;
+    }
 }

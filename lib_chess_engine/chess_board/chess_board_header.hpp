@@ -4,6 +4,7 @@
 #include <sstream>
 #include <cctype>
 #include <stack>
+#include <unordered_map>
 
 #include "../helpers/bitboard_helper_header.hpp"
 #include "../transposition_table/zobrist_hash_generator_header.h"
@@ -21,6 +22,8 @@ public:
 
     std::stack<BoardState> stateHistory = {};
     BoardState currentState;
+    std::unordered_map<U64, int> repetitionTracker = {};
+    bool isRepetition = false;
 
     void loadFromFEN(std::string FEN);
     void FENStringParser(std::string FEN);
@@ -64,6 +67,7 @@ private:
     void updateCastlingRights(Color sideToMove, Color enemyColor, int from, int to);
     void updateFullmoveNumber(Color sideToMove);
     void updateHalfmoveClock(MoveFlags flag, PieceType movingPiece);
+    void updateRepetitionTracker(U64 zobristKey, int changeAmount);
 };
 
 #endif

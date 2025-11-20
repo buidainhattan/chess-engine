@@ -8,6 +8,10 @@ Evaluation::Evaluation(ChessBoard &chessBoard) : chessBoard(chessBoard)
 
 int Evaluation::evaluate()
 {
+    if (chessBoard.isRepetition) {
+        return 0;
+    }
+
     int whiteValue, blackValue;
     whiteValue = blackValue = 0;
 
