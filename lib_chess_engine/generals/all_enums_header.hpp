@@ -2,7 +2,7 @@
 #define ALL_ENUMS_H
 
 #include <string>
-#include <map>
+#include <unordered_map>
 
 #include "general_configs_header.hpp"
 
@@ -31,8 +31,10 @@ const enum Color {
     color_NB,
 };
 
-extern const std::map<std::string, SquareEnum> stringToSquareEnum;
-extern const std::map<std::string, Color> stringToColor;
+// --- Piece Symbols Mapping ---
+extern const std::unordered_map<int, std::string> pieceSymbols;
+extern const std::unordered_map<std::string, SquareEnum> stringToSquareEnum;
+extern const std::unordered_map<std::string, Color> stringToColor;
 extern const std::string squareIndexToString[64];
 extern const std::string pieceTypeToString[7];
 extern const std::string colorToString[3];

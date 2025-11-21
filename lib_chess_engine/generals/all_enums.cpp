@@ -2,7 +2,12 @@
 
 using namespace std;
 
-const map<string, SquareEnum> stringToSquareEnum = 
+const unordered_map<int, string> pieceSymbols = {
+    {0, "P"}, {1, "N"}, {2, "B"}, {3, "R"}, { 4, "Q"}, { 5, "K"},
+    {6, "p"}, {7, "n"}, {8, "b"}, {9, "r"}, {10, "q"}, {11, "k"}
+};
+
+const unordered_map<string, SquareEnum> stringToSquareEnum = 
 {
     {"a1", a1}, {"b1", b1}, {"c1", c1}, {"d1", d1}, {"e1", e1}, {"f1", f1}, {"g1", g1}, {"h1", h1},
     {"a2", a2}, {"b2", b2}, {"c2", c2}, {"d2", d2}, {"e2", e2}, {"f2", f2}, {"g2", g2}, {"h2", h2},
@@ -14,7 +19,7 @@ const map<string, SquareEnum> stringToSquareEnum =
     {"a8", a8}, {"b8", b8}, {"c8", c8}, {"d8", d8}, {"e8", e8}, {"f8", f8}, {"g8", g8}, {"h8", h8},
 };
 
-const map<string, Color> stringToColor = 
+const unordered_map<string, Color> stringToColor = 
 {
     {"white", white} , {"black", black},
     {"color_NB", color_NB},

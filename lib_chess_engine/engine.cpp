@@ -15,11 +15,11 @@ void Engine::loadFromFEN(string FEN)
     chessBoard.loadFromFEN(FEN);
 }
 
-Move Engine::convertStringToMove(const std::string &moveString)
+Move Engine::convertStringToMove(const string &moveString)
 {
     if (moveString.length() < 4 || moveString.length() > 5)
     {
-        throw std::runtime_error("Invalid move string: length must be 4 or 5.");
+        throw runtime_error("Invalid move string: length must be 4 or 5.");
     }
 
     int from, to;
@@ -29,9 +29,9 @@ Move Engine::convertStringToMove(const std::string &moveString)
         from = stringToSquareEnum.at(moveString.substr(0, 2));
         to = stringToSquareEnum.at(moveString.substr(2, 2));
     }
-    catch (const std::out_of_range &)
+    catch (const out_of_range &)
     {
-        throw std::runtime_error("Invalid move string: contains an invalid square.");
+        throw runtime_error("Invalid move string: contains an invalid square.");
     }
 
     MoveFlags flags = QUIET_MOVE;
@@ -60,7 +60,7 @@ Move Engine::convertStringToMove(const std::string &moveString)
             promotionPieceBits = knight - knight;
             break;
         default:
-            throw std::runtime_error("Invalid promotion piece: " + std::string(1, moveString[4]));
+            throw runtime_error("Invalid promotion piece: " + string(1, moveString[4]));
         }
 
         // Combine the base flag with the piece bits
@@ -100,6 +100,45 @@ Move Engine::convertStringToMove(const std::string &moveString)
     }
 
     return Move(from, to, flags);
+}
+
+void Engine::prettyPrintBitboard()
+{
+    // Print top border
+    cout << "  ---------------------------------" << endl;
+
+    // Iterate through ranks from 8 (index 7) down to 1 (index 0)
+    for (int rank = 7; rank >= 0; --rank)
+    {
+        cout << rank + 1 << " |"; // Print rank number (1-8)
+
+        // Iterate through files from A (index 0) to H (index 7)
+        for (int file = 0; file < 8; ++file)
+        {
+            // Calculate the 0-63 square index (A1=0, H8=63)
+            int squareIndex = rank * 8 + file;
+            U64 squareMask = 1ULL << squareIndex;
+            string pieceChar = "-"; // Default to empty square (using a space for alignment)
+
+            // Check if any piece occupies this square
+            if (chessBoard.pieceAt[squareIndex] != pieceType_NB) {
+                Color pieceColor = white;
+                if (squareMask & chessBoard.pieceColorBitboards[black]) {
+                    pieceColor = black;
+                }
+                int symbolIndex = pieceColor * 6 + chessBoard.pieceAt[squareIndex];
+                pieceChar = pieceSymbols.at(symbolIndex);
+            }
+
+            // Print the piece character (using a width of 3 characters total for alignment)
+            cout << " " << pieceChar << (pieceChar == " " ? " |" : " |");
+        }
+        cout << endl;
+        cout << "  ---------------------------------" << endl;
+    }
+
+    // Print file labels (A-H)
+    cout << "    A   B   C   D   E   F   G   H  " << endl;
 }
 
 BoardState Engine::getCurrentBoardState()
@@ -147,6 +186,18 @@ bool Engine::isInCheck(Color kingSide)
         return true;
     }
     return false;
+}
+
+void Engine::printRepetitionTracker()
+{
+    for (auto pair : chessBoard.repetitionTracker) {
+        cout << "{" << pair.first << " : " << pair.second << "}";
+    }
+}
+
+bool Engine::isRepetition()
+{
+    return chessBoard.isRepetition;
 }
 
 string Engine::disambiguating(Color sideToMove, Move move)

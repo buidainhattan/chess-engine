@@ -393,7 +393,7 @@ U64 MoveGenerator::getKingPseudoLegalAttackBitBoard(int square, Color color)
 U64 MoveGenerator::getRookRawAttackBitBoard(int square, U64 allPieces)
 {
     U64 rookBlockerBitBoard, magicIndex;
-    rookBlockerBitBoard = rookRayMask(square) & chessBoard.allPieces;
+    rookBlockerBitBoard = rookRayMask(square) & allPieces;
     magicIndex = (rookBlockerBitBoard * rookMagicBitBoards[square]) >> rookShifts[square];
     U64 lookupIndex = (square * MAX_ROOK_SIZE) + magicIndex;
 

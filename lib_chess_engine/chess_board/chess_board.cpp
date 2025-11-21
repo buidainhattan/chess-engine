@@ -47,6 +47,7 @@ void ChessBoard::FENStringParser(string FEN)
         aspectIndex++;
     }
     zobristHasher.setInitialZobristKey(pieceBitboards, currentState);
+    updateRepetitionTracker(currentState.zobristKey, 1);
 }
 
 string ChessBoard::FENStringCrafter()
@@ -440,15 +441,21 @@ void ChessBoard::updateRepetitionTracker(U64 zobristKey, int changeAmount)
     if (currentState.halfmoveClock == 0)
     {
         repetitionTracker.clear();
+        repetitionTracker[zobristKey] += changeAmount;
         return;
     }
     repetitionTracker[zobristKey] += changeAmount;
-    if (repetitionTracker[zobristKey] < 0) {
+    if (repetitionTracker[zobristKey] < 0)
+    {
         repetitionTracker.erase(zobristKey);
-        isRepetition = false;
         return;
     }
-    if (repetitionTracker[zobristKey] >= 2) {
+    if (repetitionTracker[zobristKey] >= 3)
+    {
         isRepetition = true;
+    }
+    else
+    {
+        isRepetition = false;
     }
 }

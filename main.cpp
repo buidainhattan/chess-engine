@@ -1,6 +1,8 @@
 #include <chrono>
+#include <unordered_map>
 
 #include "lib_chess_engine/engine_header.hpp"
+#include "lib_chess_engine/helpers/engine_debug_helper_header.hpp"
 
 using namespace std;
 
@@ -152,8 +154,9 @@ string getBestMove(Engine &engine, int level)
 //     Engine engine;
 //     engine.loadFromFEN(startFEN);
 //     auto start = chrono::high_resolution_clock::now();
-//     Move bestMove = engine.getBestMove(4);
-//     cout << "Move: " << squareIndexToString[bestMove.from()] << squareIndexToString[bestMove.to()] << endl;
+//     // Move bestMove = engine.getBestMove(4);
+//     // cout << "Move: " << squareIndexToString[bestMove.from()] << squareIndexToString[bestMove.to()] << endl;
+//     perftBulkCountDivide(6, engine);
 //     auto end = chrono::high_resolution_clock::now();
 //     chrono::duration<double, milli> duration = end - start;
 //     cout << "Time taken: " << duration.count() / 1000 << " second(s)" << endl;
@@ -165,13 +168,33 @@ int main()
 {
     Engine engine;
     engine.loadFromFEN(startFEN);
-    cout << engine.getCurrentBoardState().zobristKey << endl;
-    vector<Move> legalMoves = engine.getLegalMoves();
-    Move move1 = legalMoves[0];
-    engine.makeMove(move1);
-    cout << engine.getCurrentBoardState().zobristKey << endl;
-    engine.unMakeMove(move1);
-    cout << engine.getCurrentBoardState().zobristKey << endl;
+    while (true)
+    {
+        engine.prettyPrintBitboard();
+        vector<Move> legalMoves = engine.getLegalMoves();
+        unordered_map<string, Move> movesMap = {};
+        for (Move move : legalMoves)
+        {
+            string moveAbbreviate = squareIndexToString[move.from()] + squareIndexToString[move.to()];
+            movesMap[moveAbbreviate] = move;
+        }
+        cout << endl;
+        engine.printRepetitionTracker();
+        cout << endl;
+        cout << colorToString[engine.getCurrentSide()] << " turn to make move: ";
+        string moveToMake;
+        cin >> moveToMake;
+        if (moveToMake == "q")
+        {
+            break;
+        }
+        engine.makeMove(movesMap[moveToMake]);
+        cout << endl;
+        if (engine.isRepetition())
+        {
+            cout << "Is three folds repetition! Draw" << endl;
+        }
+    }
 
     return 0;
 }
