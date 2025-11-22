@@ -3,6 +3,7 @@
 
 #include "../move_generator/move_generator_header.hpp"
 #include "../evaluation/evaluation_header.hpp"
+#include "../transposition_table/transposition_table_header.h"
 
 class Search
 {
@@ -20,6 +21,7 @@ private:
     MoveGenerator &moveGenerator;
 
     Evaluation evaluation = Evaluation(chessBoard);
+    TranspositionTable table;
 };
 
 #endif

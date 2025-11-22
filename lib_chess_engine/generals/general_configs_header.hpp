@@ -9,6 +9,7 @@ static const std::string startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
 
 static const int ZOBRIST_HASH_SIZE = 781;
 static const U64 ZOBRIST_SEED = 0x8787878787878800ULL;
+static const int TABLE_SIZE = 2^17;
 
 static constexpr U64 A_FILE = 0x0101010101010101ULL;
 static constexpr U64 H_FILE = 0x8080808080808080ULL;

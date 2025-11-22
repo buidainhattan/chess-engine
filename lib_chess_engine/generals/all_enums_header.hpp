@@ -139,6 +139,20 @@ struct Move
     bool operator!=(const Move &other) const { return data != other.data; }
 };
 
+const enum NodeFlag
+{
+    EXACT, LOWER_BOUND, UPPER_BOUND
+}
+;
+struct TranspositionEntry 
+{
+    U64 zobristKey = 0ULL;
+    int score;
+    int depth;
+    NodeFlag flag;
+    Move bestMove;
+};
+
 static const int pieceSquareTable[pieceType_NB][square_NB] = 
 {
     {
